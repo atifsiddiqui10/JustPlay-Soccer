@@ -7,10 +7,10 @@ import fs from "fs"
 import {MongoClient} from "mongodb";
 
 class StatsAPI {
-    outlet = "1mcmhe8u5fbli106kbuoh6umaj";
-    secKey = 'f8ofuj6o7x1t1pa7mapq4y9j3'
+    outlet = "";
+    secKey = ''
     constructor(){
-        this.oauthUrl = `https://oauth.performgroup.com/oauth/token`
+        this.oauthUrl = ``
     }
 
 
