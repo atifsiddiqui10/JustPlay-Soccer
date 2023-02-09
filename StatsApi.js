@@ -341,20 +341,26 @@ function mongoConnect() {
 let db = mongoConnect();
 
 //MlS 2022 Teams
+console.log("starting insert mlsTeams")
 MLS2022Teams.contestant.forEach((team, index, array) => {
     const teamId = team.id
     const data = team
     mongoInsert("mlsTeams", teamId, data, db)
 });
+console.log("finished insert mlsTeams")
+
 
 //MLS team squads 
 //console.log(mls2022Squad)
+console.log("starting insert mls22Squads")
 mls2022Squad.squad.forEach((squad, index, obj)=>{
     const teamId = squad.contestantId
     const teamSquad = squad
     mongoInsert('mls22Squads', teamId, teamSquad, db)
 })
+console.log("finished insert mls22Squads")
 
+console.log("starting insert mls22Fixtures")
 //mls 2022 fix
 console.log(mls2022Fixutes.match)
 mls2022Fixutes.match.forEach((fixture, index, array)=>{
@@ -362,8 +368,9 @@ mls2022Fixutes.match.forEach((fixture, index, array)=>{
     const fixInfo = fixture.matchInfo
     mongoInsert('mls22Fixtures', fixId, fixInfo, db)
 })
+console.log("finished insert mls22Fixtures")
 
-
+console.log("starting insert mlsMatchStats")
 // Match Stats 
 for (let x = 0; x < mls2022MatchIds.length; x ++){
     let matchId = mls2022MatchIds[x];
@@ -373,6 +380,10 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     mongoInsert('mlsMatchStats', mId,mStat, db)
 
 }
+console.log("finished insert mlsMatchStats")
+
+
+console.log("starting insert mlsMatchEvents")
 
 // Match Events 
 for (let x = 0; x < mls2022MatchIds.length; x ++){
@@ -384,6 +395,9 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     mongoInsert('mlsMatchEvents', mId,mEvent, db)
 
 }
+console.log("finished insert mlsMatchEvents")
+
+console.log("starting insert mlsMatchPassMat")
 
 // Match Pass Matrix and avg Positions 
 for (let x = 0; x < mls2022MatchIds.length; x ++){
@@ -395,6 +409,10 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     mongoInsert('mlsMatchPassMat', mId,mPass, db)
 
 }
+console.log("finished insert mlsMatchPassMat")
+
+
+console.log("starting insert mlsMatchPoss")
 
 // // Match Possession 
 for (let x = 0; x < mls2022MatchIds.length; x ++){
@@ -407,7 +425,11 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
 
 }
 
+console.log("finished insert mlsMatchPoss")
+
+
 //Seasonal Stats 
+console.log("starting insert mlsSeasonStats")
 
 for (let x = 0; x < mlsTeamsIds.length; x++){
     let teamId = mlsTeamsIds[x];
@@ -420,20 +442,30 @@ for (let x = 0; x < mlsTeamsIds.length; x++){
     //console.log(seasStats)
 }
 
+console.log("finished insert mlsSeasonStats")
 
+
+console.log("starting insert mlsTransfers")
 //transfers 
 const mls22Transfers = await stats.tranfers(mls2022TourCalID, accessToken)
 mongoInsert('mlsTransfers',mls2022TourCalID,mls22Transfers, db)
+console.log("finished insert mlsTransfers")
 
+console.log("starting insert mlsRankings")
 // Ranking
 const mls22Rankings = await stats.rankings(mls2022TourCalID, accessToken)
 mongoInsert('mlsRankings',mls2022TourCalID,mls22Rankings, db)
+console.log("finished insert mlsRankings")
 
+console.log("starting insert topPerformers")
 //Top performers 
 const mls22TopPerformers = await stats.topPerformers(mls2022TourCalID, accessToken)
 mongoInsert('topPerformers',mls2022TourCalID,mls22TopPerformers, db)
+console.log("finished insert topPerformers")
+
 
 // auto commentating 
+console.log("starting insert mlsCommentary")
 
 for (let x = 0; x < mls2022MatchIds.length; x ++){
     let matchId = mls2022MatchIds[x];
@@ -444,3 +476,5 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     mongoInsert('mlsCommentary', mId,mCom, db)
 
 }
+
+console.log("finished insert mlsCommentary")
