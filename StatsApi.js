@@ -197,7 +197,19 @@ class StatsAPI {
     }
 
     async commentary(matchID, token){
-        const response = await fetch(`https://api.performfeeds.com/soccerdata/commentary/${this.outlet}?_rt=b&_fmt=json&fx=${matchID}&_pgSz=500&type=fallback`, {
+        const response = await fetch(`https://api.performfeeds.com/soccerdata/commentary/${this.outlet}?_rt=b&_fmt=json&fx=${matchID}&_pgSz=500&type=auto`, {
+            method: "GET",
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            }
+        })
+        const comment = await response.json();
+        //console.log(comp_teams);
+        return comment;
+    }
+    
+    async penalties(matchID, token){
+        const response = await fetch(`https://api.performfeeds.com/soccerdata/matchpenaltiespreview/${this.outlet}?_rt=b&_fmt=json&fx=${matchID}&_pgSz=500`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -281,6 +293,11 @@ async function mongoInsert(collecName, id, object, db){
         const collection = db.collection(collecName);
         await collection.insertOne({"_id":id,"optaMatchId":id,"Commentary": object});
     }
+    
+     else if(collecName == "mlsPenalties"){
+        const collection = db.collection(collecName);
+        await collection.insertOne({"_id":id,"optaMatchId":id,"Penalties": object});
+    }
 }
 
 /*
@@ -344,133 +361,133 @@ function mongoConnect() {
 let db = mongoConnect();
 
 //MlS 2022 Teams
-console.log("starting insert mlsTeams")
-console.log(MLS2022Teams.contestant.length)
-MLS2022Teams.contestant.forEach((team, index, array) => {
-    const teamId = team.id
-    const data = team
-    mongoInsert("mlsTeams", teamId, data, db)
-});
-console.log("finished insert mlsTeams")
+// console.log("starting insert mlsTeams")
+// console.log(MLS2022Teams.contestant.length)
+// MLS2022Teams.contestant.forEach((team, index, array) => {
+//     const teamId = team.id
+//     const data = team
+//     mongoInsert("mlsTeams", teamId, data, db)
+// });
+// console.log("finished insert mlsTeams")
 
 
-//MLS team squads 
-//console.log(mls2022Squad)
-console.log("starting insert mls22Squads")
-console.log(mls2022Squad.squad.length)
-mls2022Squad.squad.forEach((squad, index, obj)=>{
-    const teamId = squad.contestantId
-    const teamSquad = squad
-    mongoInsert('mls22Squads', teamId, teamSquad, db)
-})
-console.log("finished insert mls22Squads")
+// //MLS team squads 
+// //console.log(mls2022Squad)
+// console.log("starting insert mls22Squads")
+// console.log(mls2022Squad.squad.length)
+// mls2022Squad.squad.forEach((squad, index, obj)=>{
+//     const teamId = squad.contestantId
+//     const teamSquad = squad
+//     mongoInsert('mls22Squads', teamId, teamSquad, db)
+// })
+// console.log("finished insert mls22Squads")
 
-console.log("starting insert mls22Fixtures")
-//mls 2022 fix
-console.log(mls2022Fixutes.match.length)
-mls2022Fixutes.match.forEach((fixture, index, array)=>{
-    const fixId = fixture.matchInfo.id
-    const fixInfo = fixture.matchInfo
-    mongoInsert('mls22Fixtures', fixId, fixInfo, db)
-})
-console.log("finished insert mls22Fixtures")
+// console.log("starting insert mls22Fixtures")
+// //mls 2022 fix
+// console.log(mls2022Fixutes.match.length)
+// mls2022Fixutes.match.forEach((fixture, index, array)=>{
+//     const fixId = fixture.matchInfo.id
+//     const fixInfo = fixture.matchInfo
+//     mongoInsert('mls22Fixtures', fixId, fixInfo, db)
+// })
+// console.log("finished insert mls22Fixtures")
 
-console.log("starting insert mls22MatchStats")
-// Match Stats 
-console.log(mls2022MatchIds.length)
-for (let x = 0; x < mls2022MatchIds.length; x ++){
-    let matchId = mls2022MatchIds[x];
-    const matchStats = await stats.matchStats(matchId, accessToken);
-    const mId = matchStats.matchInfo.id
-    const mStat = matchStats
-    mongoInsert('mls22MatchStats', mId,mStat, db)
+// console.log("starting insert mls22MatchStats")
+// // Match Stats 
+// console.log(mls2022MatchIds.length)
+// for (let x = 0; x < mls2022MatchIds.length; x ++){
+//     let matchId = mls2022MatchIds[x];
+//     const matchStats = await stats.matchStats(matchId, accessToken);
+//     const mId = matchStats.matchInfo.id
+//     const mStat = matchStats
+//     mongoInsert('mls22MatchStats', mId,mStat, db)
 
-}
-console.log("finished insert mls22MatchStats")
-
-
-console.log("starting insert mls22MatchEvents")
-
-// Match Events 
-console.log(mls2022MatchIds.length)
-for (let x = 0; x < mls2022MatchIds.length; x ++){
-    let matchId = mls2022MatchIds[x];
-    const matchEvents = await stats.matchEvent(matchId, accessToken)
-    //console.log(matchEvents.matchInfo.id)
-    const mId = matchEvents.matchInfo.id
-    const mEvent = matchEvents
-    mongoInsert('mls22MatchEvents', mId,mEvent, db)
-
-}
-console.log("finished insert mls22MatchEvents")
-
-console.log("starting insert mlsMatchPassMat")
-
-// Match Pass Matrix and avg Positions 
-console.log(mls2022MatchIds.length)
-for (let x = 0; x < mls2022MatchIds.length; x ++){
-    let matchId = mls2022MatchIds[x];
-    const passMatrix = await stats.PassMatAndFormation(matchId, accessToken)
-    // console.log(passMatrix)
-    const mId = passMatrix.matchInfo.id
-    const mPass = passMatrix
-    mongoInsert('mlsMatchPassMat', mId,mPass, db)
-
-}
-console.log("finished insert mlsMatchPassMat")
+// }
+// console.log("finished insert mls22MatchStats")
 
 
-console.log("starting insert mlsMatchPoss")
+// console.log("starting insert mls22MatchEvents")
 
-// // Match Possession 
-console.log(mls2022MatchIds.length)
-for (let x = 0; x < mls2022MatchIds.length; x ++){
-    let matchId = mls2022MatchIds[x];
-    const poss = await stats.possession(matchId, accessToken)
-    //console.log(poss)
-    const mId = poss.matchInfo.id
-    const mPoss = poss
-    mongoInsert('mlsMatchPoss', mId,mPoss, db)
+// // Match Events 
+// console.log(mls2022MatchIds.length)
+// for (let x = 0; x < mls2022MatchIds.length; x ++){
+//     let matchId = mls2022MatchIds[x];
+//     const matchEvents = await stats.matchEvent(matchId, accessToken)
+//     //console.log(matchEvents.matchInfo.id)
+//     const mId = matchEvents.matchInfo.id
+//     const mEvent = matchEvents
+//     mongoInsert('mls22MatchEvents', mId,mEvent, db)
 
-}
+// }
+// console.log("finished insert mls22MatchEvents")
 
-console.log("finished insert mlsMatchPoss")
+// console.log("starting insert mlsMatchPassMat")
 
+// // Match Pass Matrix and avg Positions 
+// console.log(mls2022MatchIds.length)
+// for (let x = 0; x < mls2022MatchIds.length; x ++){
+//     let matchId = mls2022MatchIds[x];
+//     const passMatrix = await stats.PassMatAndFormation(matchId, accessToken)
+//     // console.log(passMatrix)
+//     const mId = passMatrix.matchInfo.id
+//     const mPass = passMatrix
+//     mongoInsert('mlsMatchPassMat', mId,mPass, db)
 
-//Seasonal Stats 
-console.log("starting insert mlsSeasonStats")
-console.log(mlsTeamsIds.length)
-for (let x = 0; x < mlsTeamsIds.length; x++){
-    let teamId = mlsTeamsIds[x];
-    //console.log(teamId)
-    //console.log(mls2022TourCalID)
-    const seasStats = await stats.seasonalStats(mls2022TourCalID, teamId, accessToken)
-    const tId = teamId
-    const sStat = seasStats
-    mongoInsert('mlsSeasonStats', tId, sStat, db)
-    //console.log(seasStats)
-}
-
-console.log("finished insert mlsSeasonStats")
+// }
+// console.log("finished insert mlsMatchPassMat")
 
 
-console.log("starting insert mlsTransfers")
-//transfers 
-const mls22Transfers = await stats.tranfers(mls2022TourCalID, accessToken)
-mongoInsert('mlsTransfers',mls2022TourCalID,mls22Transfers, db)
-console.log("finished insert mlsTransfers")
+// console.log("starting insert mlsMatchPoss")
 
-console.log("starting insert mlsRankings")
-// Ranking
-const mls22Rankings = await stats.rankings(mls2022TourCalID, accessToken)
-mongoInsert('mlsRankings',mls2022TourCalID,mls22Rankings, db)
-console.log("finished insert mlsRankings")
+// // // Match Possession 
+// console.log(mls2022MatchIds.length)
+// for (let x = 0; x < mls2022MatchIds.length; x ++){
+//     let matchId = mls2022MatchIds[x];
+//     const poss = await stats.possession(matchId, accessToken)
+//     //console.log(poss)
+//     const mId = poss.matchInfo.id
+//     const mPoss = poss
+//     mongoInsert('mlsMatchPoss', mId,mPoss, db)
 
-console.log("starting insert topPerformers")
-//Top performers 
-const mls22TopPerformers = await stats.topPerformers(mls2022TourCalID, accessToken)
-mongoInsert('topPerformers',mls2022TourCalID,mls22TopPerformers, db)
-console.log("finished insert topPerformers")
+// }
+
+// console.log("finished insert mlsMatchPoss")
+
+
+// //Seasonal Stats 
+// console.log("starting insert mlsSeasonStats")
+// console.log(mlsTeamsIds.length)
+// for (let x = 0; x < mlsTeamsIds.length; x++){
+//     let teamId = mlsTeamsIds[x];
+//     //console.log(teamId)
+//     //console.log(mls2022TourCalID)
+//     const seasStats = await stats.seasonalStats(mls2022TourCalID, teamId, accessToken)
+//     const tId = teamId
+//     const sStat = seasStats
+//     mongoInsert('mlsSeasonStats', tId, sStat, db)
+//     //console.log(seasStats)
+// }
+
+// console.log("finished insert mlsSeasonStats")
+
+
+// console.log("starting insert mlsTransfers")
+// //transfers 
+// const mls22Transfers = await stats.tranfers(mls2022TourCalID, accessToken)
+// mongoInsert('mlsTransfers',mls2022TourCalID,mls22Transfers, db)
+// console.log("finished insert mlsTransfers")
+
+// console.log("starting insert mlsRankings")
+// // Ranking
+// const mls22Rankings = await stats.rankings(mls2022TourCalID, accessToken)
+// mongoInsert('mlsRankings',mls2022TourCalID,mls22Rankings, db)
+// console.log("finished insert mlsRankings")
+
+// console.log("starting insert topPerformers")
+// //Top performers 
+// const mls22TopPerformers = await stats.topPerformers(mls2022TourCalID, accessToken)
+// mongoInsert('topPerformers',mls2022TourCalID,mls22TopPerformers, db)
+// console.log("finished insert topPerformers")
 
 
 // auto commentating 
@@ -487,3 +504,18 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
 }
 
 console.log("finished insert mlsCommentary")
+
+
+console.log("starting insert mlsPenalties")
+console.log(mls2022MatchIds.length)
+for (let x = 0; x < mls2022MatchIds.length; x ++){
+    let matchId = mls2022MatchIds[x];
+    const com = await stats.penalties(matchId, accessToken)
+    //console.log(poss)
+    const mId = matchId
+    const mCom = com
+    mongoInsert('mlsPenalties', mId,mCom, db)
+
+}
+
+console.log("finished insert penalties")
