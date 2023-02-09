@@ -7,8 +7,8 @@ import fs from "fs"
 import {MongoClient} from "mongodb";
 
 class StatsAPI {
-    outlet = "";
-    secKey = ''
+    outlet = "1mcmhe8u5fbli106kbuoh6umaj";
+    secKey = 'f8ofuj6o7x1t1pa7mapq4y9j3'
     constructor(){
         this.oauthUrl = `https://oauth.performgroup.com/oauth/token`
     }
@@ -291,13 +291,13 @@ const accessToken = await stats.fetchPost();
 const tournamentCal = await stats.tournamentCal(accessToken);
 console.log("TOURNAMENT CALENDER")
 //const tournamentCalender = JSON.tournamentCal
-const tournamentCalender = JSON.stringify(tournamentCal, null, "\t")
+// const tournamentCalender = JSON.stringify(tournamentCal, null, "\t")
 
 // get mls teams for 2022 season using tournamnet calender ID 
 const mls2022TourCalID = '8xix0odg0gckp6uu1eg05mnmc'
 const MLS2022Teams = await stats.teamsByTC(mls2022TourCalID, accessToken);
 //console.log(MLS2022Teams.contestant.length)
-const mls22Teams = JSON.stringify(MLS2022Teams.contestant, null, "\t")
+// const mls22Teams = JSON.stringify(MLS2022Teams.contestant, null, "\t")
 
 let mlsTeamsIds = []
 MLS2022Teams.contestant.forEach(team => {
