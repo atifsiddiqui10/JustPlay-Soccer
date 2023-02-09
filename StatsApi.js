@@ -344,7 +344,7 @@ function mongoConnect() {
     return client.db(dbName);
 }
 
-let db = db.mongoConnect();
+let db = mongoConnect();
 
 //MlS 2022 Teams
 MLS2022Teams.contestant.forEach((team, index, array) => {
