@@ -332,7 +332,10 @@ function mongoConnect() {
     const dbName = 'soccer-stats-staging';
 
     const url = `mongodb://justplay-staging:6bc26a3f53@internal-mongo1-staging.justplayss.com:27017,internal-mongo2-staging.justplayss.com:27017,internal-mongo3-staging.justplayss.com:27017/${dbName}`
-    //const url = "mongodb://localhost:30001";
+
+    // const url = "mongodb://localhost:30001";
+    // const client = new MongoClient(url, { keepAlive : true, directConnection: true,  connectTimeoutMS: 5000, replicaSet: "rs0" });
+
     const client = new MongoClient(url, { keepAlive : true, connectTimeoutMS: 5000, replicaSet: "rs0" });
     client.connect();
     return client.db(dbName);
@@ -372,7 +375,7 @@ mls2022Fixutes.match.forEach((fixture, index, array)=>{
 })
 console.log("finished insert mls22Fixtures")
 
-console.log("starting insert mlsMatchStats")
+console.log("starting insert mls22MatchStats")
 // Match Stats 
 console.log(mls2022MatchIds.length)
 for (let x = 0; x < mls2022MatchIds.length; x ++){
@@ -380,13 +383,13 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     const matchStats = await stats.matchStats(matchId, accessToken);
     const mId = matchStats.matchInfo.id
     const mStat = matchStats
-    mongoInsert('mlsMatchStats', mId,mStat, db)
+    mongoInsert('mls22MatchStats', mId,mStat, db)
 
 }
-console.log("finished insert mlsMatchStats")
+console.log("finished insert mls22MatchStats")
 
 
-console.log("starting insert mlsMatchEvents")
+console.log("starting insert mls22MatchEvents")
 
 // Match Events 
 console.log(mls2022MatchIds.length)
@@ -396,10 +399,10 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     //console.log(matchEvents.matchInfo.id)
     const mId = matchEvents.matchInfo.id
     const mEvent = matchEvents
-    mongoInsert('mlsMatchEvents', mId,mEvent, db)
+    mongoInsert('mls22MatchEvents', mId,mEvent, db)
 
 }
-console.log("finished insert mlsMatchEvents")
+console.log("finished insert mls22MatchEvents")
 
 console.log("starting insert mlsMatchPassMat")
 
