@@ -393,7 +393,7 @@ console.log(mls2022MatchIds.length)
 for (let x = 0; x < mls2022MatchIds.length; x ++){
     let matchId = mls2022MatchIds[x];
     const matchEvents = await stats.matchEvent(matchId, accessToken)
-    console.log(matchEvents.matchInfo.id)
+    //console.log(matchEvents.matchInfo.id)
     const mId = matchEvents.matchInfo.id
     const mEvent = matchEvents
     mongoInsert('mlsMatchEvents', mId,mEvent, db)
