@@ -12,6 +12,7 @@ class StatsAPI {
     constructor(){
         this.oauthUrl = `https://oauth.performgroup.com/oauth/token`
     }
+    
 
 
     requestPost(){
@@ -211,64 +212,13 @@ class StatsAPI {
 
 }
 
-/*
-Get tourament calender
-*/
-const stats = new StatsAPI()
-const accessToken = await stats.fetchPost();
-const tournamentCal = await stats.tournamentCal(accessToken);
-console.log("TOURNAMENT CALENDER")
-//const tournamentCalender = JSON.tournamentCal
-const tournamentCalender = JSON.stringify(tournamentCal, null, "\t")
-
-// get mls teams for 2022 season using tournamnet calender ID 
-const mls2022TourCalID = '8xix0odg0gckp6uu1eg05mnmc'
-const MLS2022Teams = await stats.teamsByTC(mls2022TourCalID, accessToken);
-//console.log(MLS2022Teams.contestant.length)
-const mls22Teams = JSON.stringify(MLS2022Teams.contestant, null, "\t")
-
-let mlsTeamsIds = []
-MLS2022Teams.contestant.forEach(team => {
-    mlsTeamsIds.push(team.id)
-})
-
-console.log(mlsTeamsIds)
-
-
-//get mls 2022 squads
-const mls2022Squad = await stats.squads(mls2022TourCalID, accessToken);
-const mls22Squad = JSON.stringify(mls2022Squad, null, "\t")
-console.log(mls2022Squad.squad.length)
-
-//get mls 2022 fixutes and results // look for post season 
-const mls2022Fixutes = await stats.fixAndRes(mls2022TourCalID, accessToken);
-const mls22Fixutes = JSON.stringify(mls2022Fixutes, null, "\t")
-
-let matches = mls2022Fixutes.match
-let mls2022MatchIds = []
-matches.forEach(match => {
-    mls2022MatchIds.push(match.matchInfo.id)
-});
-const mls22MatchIDs = JSON.stringify(mls2022MatchIds, null, "\n")
-// fs.writeFile("./collections/mls22MatchIDS.json",mls22MatchIDs,function(err, result) {
-//     if(err) console.log('error', err);
-// });
-console.log(mls2022MatchIds.length)
-
-
 
 /*
     Connecting to mongo 
 */
 
-async function mongoInsert(collecName, id, object){
-    const url = "mongodb://localhost:30001";
-    const dbName = 'soccer-stats-dev';
+async function mongoInsert(collecName, id, object, db){
 
-    const client = new MongoClient(url, { keepAlive : true, directConnection: true, connectTimeoutMS: 5000});
-    client.connect();
-    console.log("Success")
-    const db = client.db("soccer-stats-dev");
     // const collection = db.collection(collecName);
     // collection.insertOne({"_id":id,"optaMatchId":id,"matchEvents": object});
 
@@ -333,11 +283,74 @@ async function mongoInsert(collecName, id, object){
     }
 }
 
+/*
+Get tourament calender
+*/
+const stats = new StatsAPI()
+const accessToken = await stats.fetchPost();
+const tournamentCal = await stats.tournamentCal(accessToken);
+console.log("TOURNAMENT CALENDER")
+//const tournamentCalender = JSON.tournamentCal
+const tournamentCalender = JSON.stringify(tournamentCal, null, "\t")
+
+// get mls teams for 2022 season using tournamnet calender ID 
+const mls2022TourCalID = '8xix0odg0gckp6uu1eg05mnmc'
+const MLS2022Teams = await stats.teamsByTC(mls2022TourCalID, accessToken);
+//console.log(MLS2022Teams.contestant.length)
+const mls22Teams = JSON.stringify(MLS2022Teams.contestant, null, "\t")
+
+let mlsTeamsIds = []
+MLS2022Teams.contestant.forEach(team => {
+    mlsTeamsIds.push(team.id)
+})
+
+console.log(mlsTeamsIds)
+
+
+//get mls 2022 squads
+const mls2022Squad = await stats.squads(mls2022TourCalID, accessToken);
+const mls22Squad = JSON.stringify(mls2022Squad, null, "\t")
+console.log(mls2022Squad.squad.length)
+
+//get mls 2022 fixutes and results // look for post season 
+const mls2022Fixutes = await stats.fixAndRes(mls2022TourCalID, accessToken);
+const mls22Fixutes = JSON.stringify(mls2022Fixutes, null, "\t")
+
+let matches = mls2022Fixutes.match
+let mls2022MatchIds = []
+matches.forEach(match => {
+    mls2022MatchIds.push(match.matchInfo.id)
+});
+const mls22MatchIDs = JSON.stringify(mls2022MatchIds, null, "\n")
+// fs.writeFile("./collections/mls22MatchIDS.json",mls22MatchIDs,function(err, result) {
+//     if(err) console.log('error', err);
+// });
+console.log(mls2022MatchIds.length)
+
+function mongoConnect() {
+    let dev = true;
+    let url;
+    const dbName = 'soccer-stats-staging';
+
+    if(dev) {
+        url = "mongodb://localhost:30001";
+    }
+    else {
+        url = `mongodb://justplay-staging:6bc26a3f53@internal-mongo1-staging.justplayss.com:27017,internal-mongo2-staging.justplayss.com:27017,internal-mongo3-staging.justplayss.com:27017/${dbName}?replicaSet=rs0&w=majority&wtimeoutMS=10000`
+    }
+
+    const client = new MongoClient(url, { keepAlive : true, directConnection: !dev, connectTimeoutMS: 5000, replicaSet: "rs0" });
+    client.connect();
+    return client.db(dbName);
+}
+
+let db = db.mongoConnect();
+
 //MlS 2022 Teams
 MLS2022Teams.contestant.forEach((team, index, array) => {
     const teamId = team.id
     const data = team
-    mongoInsert("mlsTeams", teamId, data)
+    mongoInsert("mlsTeams", teamId, data, db)
 });
 
 //MLS team squads 
@@ -345,8 +358,7 @@ MLS2022Teams.contestant.forEach((team, index, array) => {
 mls2022Squad.squad.forEach((squad, index, obj)=>{
     const teamId = squad.contestantId
     const teamSquad = squad
-    console.log(teamId)
-    mongoInsert('mls22Squads', teamId, teamSquad)
+    mongoInsert('mls22Squads', teamId, teamSquad, db)
 })
 
 //mls 2022 fix
@@ -354,7 +366,7 @@ console.log(mls2022Fixutes.match)
 mls2022Fixutes.match.forEach((fixture, index, array)=>{
     const fixId = fixture.matchInfo.id
     const fixInfo = fixture.matchInfo
-    mongoInsert('mls22Fixtures', fixId, fixInfo)
+    mongoInsert('mls22Fixtures', fixId, fixInfo, db)
 })
 
 
@@ -362,10 +374,9 @@ mls2022Fixutes.match.forEach((fixture, index, array)=>{
 for (let x = 0; x < mls2022MatchIds.length; x ++){
     let matchId = mls2022MatchIds[x];
     const matchStats = await stats.matchStats(matchId, accessToken);
-    console.log(matchStats.matchInfo.id)
     const mId = matchStats.matchInfo.id
     const mStat = matchStats
-    // mongoInsert('mlsMatchStats', mId,mStat)
+    mongoInsert('mlsMatchStats', mId,mStat, db)
 
 }
 
@@ -376,7 +387,7 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     console.log(matchEvents.matchInfo.id)
     const mId = matchEvents.matchInfo.id
     const mEvent = matchEvents
-    mongoInsert('mlsMatchEvents', mId,mEvent)
+    mongoInsert('mlsMatchEvents', mId,mEvent, db)
 
 }
 
@@ -387,7 +398,7 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     // console.log(passMatrix)
     const mId = passMatrix.matchInfo.id
     const mPass = passMatrix
-    mongoInsert('mlsMatchPassMat', mId,mPass)
+    mongoInsert('mlsMatchPassMat', mId,mPass, db)
 
 }
 
@@ -398,7 +409,7 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     //console.log(poss)
     const mId = poss.matchInfo.id
     const mPoss = poss
-    mongoInsert('mlsMatchPoss', mId,mPoss)
+    mongoInsert('mlsMatchPoss', mId,mPoss, db)
 
 }
 
@@ -411,22 +422,22 @@ for (let x = 0; x < mlsTeamsIds.length; x++){
     const seasStats = await stats.seasonalStats(mls2022TourCalID, teamId, accessToken)
     const tId = teamId
     const sStat = seasStats
-    mongoInsert('mlsSeasonStats', tId, sStat)
+    mongoInsert('mlsSeasonStats', tId, sStat, db)
     //console.log(seasStats)
 }
 
 
 //transfers 
 const mls22Transfers = await stats.tranfers(mls2022TourCalID, accessToken)
-mongoInsert('mlsTransfers',mls2022TourCalID,mls22Transfers)
+mongoInsert('mlsTransfers',mls2022TourCalID,mls22Transfers, db)
 
 // Ranking
 const mls22Rankings = await stats.rankings(mls2022TourCalID, accessToken)
-mongoInsert('mlsRankings',mls2022TourCalID,mls22Rankings)
+mongoInsert('mlsRankings',mls2022TourCalID,mls22Rankings, db)
 
 //Top performers 
 const mls22TopPerformers = await stats.topPerformers(mls2022TourCalID, accessToken)
-mongoInsert('topPerformers',mls2022TourCalID,mls22TopPerformers)
+mongoInsert('topPerformers',mls2022TourCalID,mls22TopPerformers, db)
 
 // auto commentating 
 
@@ -436,6 +447,6 @@ for (let x = 0; x < mls2022MatchIds.length; x ++){
     //console.log(poss)
     const mId = matchId
     const mCom = com
-    mongoInsert('mlsCommentary', mId,mCom)
+    mongoInsert('mlsCommentary', mId,mCom, db)
 
 }
