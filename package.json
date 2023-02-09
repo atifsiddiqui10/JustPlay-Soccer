@@ -1,0 +1,14 @@
+{
+    "type": "module",
+    "dependencies": {
+        "fetch": "^1.1.0",
+        "fs": "0.0.1-security",
+        "fs-es6": "0.0.2",
+        "git": "^0.1.5",
+        "js-sha512": "^0.8.0",
+        "mongodb": "^5.0.0",
+        "node-fetch": "^3.3.0",
+        "request": "^2.88.2",
+        "require": "^2.4.20"
+    }
+}
