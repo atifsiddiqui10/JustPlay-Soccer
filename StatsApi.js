@@ -328,18 +328,12 @@ const mls22MatchIDs = JSON.stringify(mls2022MatchIds, null, "\n")
 console.log(mls2022MatchIds.length)
 
 function mongoConnect() {
-    let dev = true;
-    let url;
+    
     const dbName = 'soccer-stats-staging';
 
-    if(dev) {
-        url = "mongodb://localhost:30001";
-    }
-    else {
-        url = `mongodb://justplay-staging:6bc26a3f53@internal-mongo1-staging.justplayss.com:27017,internal-mongo2-staging.justplayss.com:27017,internal-mongo3-staging.justplayss.com:27017/${dbName}?replicaSet=rs0&w=majority&wtimeoutMS=10000`
-    }
+    const url = `mongodb://justplay-staging:6bc26a3f53@internal-mongo1-staging.justplayss.com:27017,internal-mongo2-staging.justplayss.com:27017,internal-mongo3-staging.justplayss.com:27017/${dbName}`
 
-    const client = new MongoClient(url, { keepAlive : true, directConnection: !dev, connectTimeoutMS: 5000, replicaSet: "rs0" });
+    const client = new MongoClient(url, { keepAlive : true, connectTimeoutMS: 5000, replicaSet: "rs0" });
     client.connect();
     return client.db(dbName);
 }
