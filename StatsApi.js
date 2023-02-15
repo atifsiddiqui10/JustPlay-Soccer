@@ -101,7 +101,7 @@ class StatsAPI {
     }
 
     async matchStats(matchID, token){
-        const response = await fetch(`https://api.performfeeds.com/soccerdata/matchstats/${this.outlet}?_rt=b&_fmt=json&fx=${matchID}&_pgSz=1&detailed=yes`, {
+        const response = await fetch(`https://api.performfeeds.com/soccerdata/matchstats/${this.outlet}?_rt=b&_fmt=json&fx=${matchID}&_pgSz=1000&detailed=yes`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -149,7 +149,7 @@ class StatsAPI {
     }
     //SeasonalStats
     async seasonalStats(tourID, teamId, token){
-        const response = await fetch(`https://api.performfeeds.com/soccerdata/seasonstats/${this.outlet}?_rt=b&_fmt=json&tmcl=${tourID}&ctst=${teamId}&_pgSz=500`, {
+        const response = await fetch(`https://api.performfeeds.com/soccerdata/seasonstats/${this.outlet}?_rt=b&_fmt=json&tmcl=${tourID}&ctst=${teamId}&_pgSz=1000&detailed=yes`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -454,21 +454,21 @@ console.log("finished insert mls22MatchStats")
 // console.log("finished insert mlsMatchPoss")
 
 
-// //Seasonal Stats 
-// console.log("starting insert mlsSeasonStats")
-// console.log(mlsTeamsIds.length)
-// for (let x = 0; x < mlsTeamsIds.length; x++){
-//     let teamId = mlsTeamsIds[x];
-//     //console.log(teamId)
-//     //console.log(mls2022TourCalID)
-//     const seasStats = await stats.seasonalStats(mls2022TourCalID, teamId, accessToken)
-//     const tId = teamId
-//     const sStat = seasStats
-//     mongoInsert('mlsSeasonStats', tId, sStat, db)
-//     //console.log(seasStats)
-// }
+//Seasonal Stats 
+console.log("starting insert mlsSeasonStats")
+console.log(mlsTeamsIds.length)
+for (let x = 0; x < mlsTeamsIds.length; x++){
+    let teamId = mlsTeamsIds[x];
+    //console.log(teamId)
+    //console.log(mls2022TourCalID)
+    const seasStats = await stats.seasonalStats(mls2022TourCalID, teamId, accessToken)
+    const tId = teamId
+    const sStat = seasStats
+    mongoInsert('mlsSeasonStats', tId, sStat, db)
+    //console.log(seasStats)
+}
 
-// console.log("finished insert mlsSeasonStats")
+console.log("finished insert mlsSeasonStats")
 
 
 // console.log("starting insert mlsTransfers")
