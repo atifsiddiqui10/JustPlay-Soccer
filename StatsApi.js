@@ -101,7 +101,7 @@ class StatsAPI {
     }
 
     async matchStats(matchID, token){
-        const response = await fetch(`https://api.performfeeds.com/soccerdata/matchstats/${this.outlet}?_rt=b&_fmt=json&fx=${matchID}&_pgSz=1`, {
+        const response = await fetch(`https://api.performfeeds.com/soccerdata/matchstats/${this.outlet}?_rt=b&_fmt=json&fx=${matchID}&_pgSz=1&detailed=yes`, {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -392,18 +392,18 @@ let db = mongoConnect();
 // })
 // console.log("finished insert mls22Fixtures")
 
-// console.log("starting insert mls22MatchStats")
-// // Match Stats 
-// console.log(mls2022MatchIds.length)
-// for (let x = 0; x < mls2022MatchIds.length; x ++){
-//     let matchId = mls2022MatchIds[x];
-//     const matchStats = await stats.matchStats(matchId, accessToken);
-//     const mId = matchStats.matchInfo.id
-//     const mStat = matchStats
-//     mongoInsert('mls22MatchStats', mId,mStat, db)
+console.log("starting insert mls22MatchStats")
+// Match Stats 
+console.log(mls2022MatchIds.length)
+for (let x = 0; x < mls2022MatchIds.length; x ++){
+    let matchId = mls2022MatchIds[x];
+    const matchStats = await stats.matchStats(matchId, accessToken);
+    const mId = matchStats.matchInfo.id
+    const mStat = matchStats
+    mongoInsert('mls22MatchStats', mId,mStat, db)
 
-// }
-// console.log("finished insert mls22MatchStats")
+}
+console.log("finished insert mls22MatchStats")
 
 
 // console.log("starting insert mls22MatchEvents")
@@ -490,32 +490,32 @@ let db = mongoConnect();
 // console.log("finished insert topPerformers")
 
 
-// auto commentating 
-console.log("starting insert mlsCommentary")
-console.log(mls2022MatchIds.length)
-for (let x = 0; x < mls2022MatchIds.length; x ++){
-    let matchId = mls2022MatchIds[x];
-    const com = await stats.commentary(matchId, accessToken)
-    //console.log(poss)
-    const mId = matchId
-    const mCom = com
-    mongoInsert('mlsCommentary', mId,mCom, db)
+// // auto commentating 
+// console.log("starting insert mlsCommentary")
+// console.log(mls2022MatchIds.length)
+// for (let x = 0; x < mls2022MatchIds.length; x ++){
+//     let matchId = mls2022MatchIds[x];
+//     const com = await stats.commentary(matchId, accessToken)
+//     //console.log(poss)
+//     const mId = matchId
+//     const mCom = com
+//     mongoInsert('mlsCommentary', mId,mCom, db)
 
-}
+// }
 
-console.log("finished insert mlsCommentary")
+// console.log("finished insert mlsCommentary")
 
 
-console.log("starting insert mlsPenalties")
-console.log(mls2022MatchIds.length)
-for (let x = 0; x < mls2022MatchIds.length; x ++){
-    let matchId = mls2022MatchIds[x];
-    const com = await stats.penalties(matchId, accessToken)
-    //console.log(poss)
-    const mId = matchId
-    const mCom = com
-    mongoInsert('mlsPenalties', mId,mCom, db)
+// console.log("starting insert mlsPenalties")
+// console.log(mls2022MatchIds.length)
+// for (let x = 0; x < mls2022MatchIds.length; x ++){
+//     let matchId = mls2022MatchIds[x];
+//     const com = await stats.penalties(matchId, accessToken)
+//     //console.log(poss)
+//     const mId = matchId
+//     const mCom = com
+//     mongoInsert('mlsPenalties', mId,mCom, db)
 
-}
+// }
 
-console.log("finished insert penalties")
+// console.log("finished insert penalties")
